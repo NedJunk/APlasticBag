@@ -1,4 +1,4 @@
-import tweepy, time, sys, yaml
+import tweepy, time, sys, yaml, json
 
 
 class Bot(object):
@@ -28,6 +28,24 @@ class Bot(object):
 			f.writelines(questions[1:])
 			return q.strip()
 
+	def get_my_tweets(self):
+		return [status._json for status in tweepy.Cursor(self.api.user_timeline).items()]
+
+	def get_my_tweet(self, status_id):
+		for s in self.get_my_tweets():
+			if s['id'] == status_id:
+				print(s['id'])
+				# return s
+
+	def get_response_to(self, status_id):
+		for m in self.get_my_mentions():
+			if m['in_reply_to_status_id'] == status_id:
+				print(m['text'])
+
+	def get_my_mentions(self):
+		return [mention._json for mention in tweepy.Cursor(self.api.mentions_timeline).items()]
+
+
 	def test(self):
 		# print('++++++++++')
 		# print(self.api)
@@ -35,7 +53,10 @@ class Bot(object):
 		# for k, v in self.creds.items():
 		# 	print(k, v)
 
-		self.tweet()
+		# self.tweet()
+		# print([tweet['id'] for tweet in self.get_my_tweets()])
+		# print(self.get_my_tweet(767443708417486848)['text'])
+		self.get_response_to(767442132546170881)
 
 
 def main():
